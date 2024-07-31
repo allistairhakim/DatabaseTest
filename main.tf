@@ -14,6 +14,10 @@ resource "random_id" "name_suffix" {
   byte_length = 4
 }
 
+variable "docker-image" {
+    type = string
+}
+
 resource "google_sql_database_instance" "default" {
   name             = "test-instance-${random_id.name_suffix.hex}"
   database_version = "MYSQL_5_7"
@@ -43,7 +47,7 @@ resource "local_file" "docker_compose_env" {
 version: '3.1'
 services:
   web:
-    build: .
+    build: ${var.docker-image}
     ports:
       - "80:80"
     environment:
