@@ -1,10 +1,21 @@
 provider "google" {
-  project = "YOUR_PROJECT_ID"
-  region  = "YOUR_REGION"
+  project = "project-training-425616"
+  region  = "us-central1"
+}
+
+resource "random_password" "dbpass" {
+  length  = 20
+  upper   = true
+  lower   = true
+  special = false
+}
+
+resource "random_id" "name_suffix" {
+  byte_length = 4
 }
 
 resource "google_sql_database_instance" "default" {
-  name             = "example-instance"
+  name             = "test-instance-${random_id.name_suffix.hex}"
   database_version = "MYSQL_5_7"
   region           = "us-central1"
 
@@ -14,12 +25,40 @@ resource "google_sql_database_instance" "default" {
 }
 
 resource "google_sql_database" "default" {
-  name     = "example-database"
+  name     = "test-database-${random_id.name_suffix.hex}"
   instance = google_sql_database_instance.default.name
 }
 
-resource "google_sql_user" "default" {
-  name     = "example-user"
+resource "google_sql_user" "users" {
+  project  = var.host_project_id
+  name     = "admin"
   instance = google_sql_database_instance.default.name
-  password = "example-password"
+  host     = "%"
+  password = random_password.dbpass.result
+}
+
+resource "local_file" "docker_compose_env" {
+  filename = "docker-compose.yml"
+  content  = <<-EOT
+version: '3.1'
+services:
+  web:
+    build: .
+    ports:
+      - "80:80"
+    environment:
+      DBHOST: ${google_sql_database_instance.default.connection_name}
+      DBPASS: ${random_password.dbpass.result}
+      DBNAME: ${google_sql_database.default.name}
+EOT
+}
+
+resource "null_resource" "update_docker_compose" {
+  triggers = {
+    docker_compose_content = local_file.docker_compose_env.content
+  }
+
+  provisioner "local-exec" {
+    command = "mv ${local_file.docker_compose_env.filename} >> docker-compose.yml"
+  }
 }
