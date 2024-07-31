@@ -34,7 +34,7 @@ resource "google_sql_database" "default" {
 }
 
 resource "google_sql_user" "users" {
-  project  = var.host_project_id
+  project  = "project-training-425616"
   name     = "admin"
   instance = google_sql_database_instance.default.name
   host     = "%"
