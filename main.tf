@@ -34,7 +34,7 @@ resource "google_sql_database" "default" {
 }
 
 resource "google_sql_user" "users" {
-  project  = var.host_project_id
+  project  = "project-training-425616"
   name     = "admin"
   instance = google_sql_database_instance.default.name
   host     = "%"
@@ -55,4 +55,14 @@ services:
       DBPASS: ${random_password.dbpass.result}
       DBNAME: ${google_sql_database.default.name}
 EOT
+}
+
+resource "null_resource" "update_docker_compose" {
+  triggers = {
+    docker_compose_content = local_file.docker_compose_env.content
+  }
+
+  provisioner "local-exec" {
+    command = "mv ${local_file.docker_compose_env.filename} docker-compose.yml"
+  }
 }
