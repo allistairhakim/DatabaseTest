@@ -47,7 +47,7 @@ resource "local_file" "docker_compose_env" {
 version: '3.1'
 services:
   web:
-    build: ${var.docker-image}
+    build: .
     ports:
       - "80:80"
     environment:
@@ -57,12 +57,12 @@ services:
 EOT
 }
 
-resource "null_resource" "update_docker_compose" {
-  triggers = {
-    docker_compose_content = local_file.docker_compose_env.content
-  }
+# resource "null_resource" "update_docker_compose" {
+#   triggers = {
+#     docker_compose_content = local_file.docker_compose_env.content
+#   }
 
-  provisioner "local-exec" {
-    command = "mv ${local_file.docker_compose_env.filename} docker-compose.yml"
-  }
-}
+#   provisioner "local-exec" {
+#     command = "mv ${local_file.docker_compose_env.filename} docker-compose.yml"
+#   }
+# }
