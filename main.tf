@@ -25,6 +25,12 @@ resource "google_sql_database_instance" "default" {
 
   settings {
     tier = "db-f1-micro"
+    ip_configuration {
+      authorized_networks {
+        name = "allow-all"
+        value = "0.0.0.0/0"
+      }
+    }
   }
 }
 
