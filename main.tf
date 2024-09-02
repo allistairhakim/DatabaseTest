@@ -51,9 +51,9 @@ services:
     ports:
       - "80:80"
     environment:
-      DBHOST: ${google_sql_database_instance.default.connection_name}
-      DBPASS: ${random_password.dbpass.result}
-      DBNAME: ${google_sql_database.default.name}
+      DB_HOST: ${google_sql_database_instance.default.ip_address.0.ip_address}
+      DB_PASS: ${random_password.dbpass.result}
+      DB_NAME: ${google_sql_database.default.name}
 EOT
 }
 
