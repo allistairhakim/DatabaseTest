@@ -63,6 +63,19 @@ services:
 EOT
 }
 
+resource "google_compute_firewall" "allow_mysql" {
+  name    = "allow-mysql"
+  network = "default"  # Replace with your network name if different from "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["3306"]
+  }
+
+  direction = "INGRESS"
+  source_ranges = ["0.0.0.0/0"]  # Replace with specific IP ranges for security if needed
+}
+
 # resource "null_resource" "update_docker_compose" {
 #   triggers = {
 #     docker_compose_content = local_file.docker_compose_env.content
