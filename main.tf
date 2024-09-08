@@ -60,6 +60,7 @@ services:
       DB_HOST: ${google_sql_database_instance.default.ip_address.0.ip_address}
       DB_PASS: ${random_password.dbpass.result}
       DB_NAME: ${google_sql_database.default.name}
+    tty: true
 EOT
 }
 
