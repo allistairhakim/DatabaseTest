@@ -1,5 +1,9 @@
+variable "project_id" {
+  type = string
+}
+
 provider "google" {
-  project = "project-training-425616"
+  project = var.project_id
   region  = "us-central1"
 }
 
